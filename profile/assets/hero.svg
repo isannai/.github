@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420"
+     role="img" aria-labelledby="hero-title hero-desc">
+  <title id="hero-title">iSANN — Interstellar Artificial Neural Network</title>
+  <desc id="hero-desc">Inference on nodes you're allowed on, execution inside a kernel sandbox. A self-hosted AI agent runtime.</desc>
+
+  <!-- 조직 overview 배너.
+       README 의 CSS 는 GitHub 이 제거하므로 색·레이아웃을 전부 여기에 굽는다.
+       배경은 자체 완결된 다크라서 라이트/다크 테마 양쪽에서 같은 그림으로 선다. -->
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#101a2e"/>
+      <stop offset="55%"  stop-color="#0d1424"/>
+      <stop offset="100%" stop-color="#0a1120"/>
+    </linearGradient>
+
+    <radialGradient id="glowA" cx="18%" cy="0%" r="62%">
+      <stop offset="0%"   stop-color="#4fd1ff" stop-opacity=".22"/>
+      <stop offset="100%" stop-color="#4fd1ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="84%" cy="6%" r="58%">
+      <stop offset="0%"   stop-color="#8b7cff" stop-opacity=".20"/>
+      <stop offset="100%" stop-color="#8b7cff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowC" cx="50%" cy="112%" r="55%">
+      <stop offset="0%"   stop-color="#34d399" stop-opacity=".11"/>
+      <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- 격자. 가운데만 보이도록 마스크로 가장자리를 죽인다. -->
+    <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
+      <path d="M44 0 H0 V44" fill="none" stroke="#7896dc" stroke-opacity=".05" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="gridFade" cx="50%" cy="34%" r="62%">
+      <stop offset="0%"   stop-color="#fff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="gridMask">
+      <rect x="0" y="0" width="1200" height="420" fill="url(#gridFade)"/>
+    </mask>
+
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#4fd1ff"/>
+      <stop offset="100%" stop-color="#8b7cff"/>
+    </linearGradient>
+
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0.35">
+      <stop offset="8%"  stop-color="#ffffff"/>
+      <stop offset="46%" stop-color="#9fe6ff"/>
+      <stop offset="82%" stop-color="#b9aeff"/>
+    </linearGradient>
+
+    <clipPath id="round">
+      <rect x="0" y="0" width="1200" height="420" rx="20"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#round)">
+    <rect width="1200" height="420" fill="url(#bg)"/>
+    <rect width="1200" height="420" fill="url(#grid)" mask="url(#gridMask)"/>
+    <rect width="1200" height="420" fill="url(#glowA)"/>
+    <rect width="1200" height="420" fill="url(#glowB)"/>
+    <rect width="1200" height="420" fill="url(#glowC)"/>
+  </g>
+  <rect x=".5" y=".5" width="1199" height="419" rx="20" fill="none" stroke="#1d2740"/>
+
+  <!-- 브랜드 마크 (interStellar). 목업 .brand-mark 의 정적 대응본. -->
+  <g transform="translate(600 92)">
+    <path fill="url(#mark)" transform="translate(-34 -34) scale(0.68)"
+          d="M50 0 L61 39 L100 50 L61 61 L50 100 L39 61 L0 50 L39 39 Z"/>
+    <circle cx="24"  cy="-27" r="2.6" fill="#8b7cff"/>
+    <circle cx="-23" cy="23"  r="2.6" fill="#4fd1ff"/>
+    <circle cx="-26" cy="-18" r="2.6" fill="#8b7cff"/>
+  </g>
+
+  <!-- 워드마크 -->
+  <text x="600" y="216" text-anchor="middle" fill="url(#word)"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="82" font-weight="800" letter-spacing="-2.4">iSANN</text>
+
+  <text x="600" y="248" text-anchor="middle" fill="#6b7aa0"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" letter-spacing="4.6">INTERSTELLAR ARTIFICIAL NEURAL NETWORK</text>
+
+  <!-- 태그라인 -->
+  <text x="600" y="304" text-anchor="middle"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="25" font-weight="700" letter-spacing="-.3">
+    <tspan fill="#e8edfb">Inference on </tspan><tspan fill="#4fd1ff">nodes you're allowed on</tspan><tspan fill="#e8edfb">,</tspan>
+  </text>
+  <text x="600" y="338" text-anchor="middle"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="25" font-weight="700" letter-spacing="-.3">
+    <tspan fill="#e8edfb">execution inside a </tspan><tspan fill="#34d399">kernel sandbox</tspan><tspan fill="#e8edfb">.</tspan>
+  </text>
+
+  <text x="600" y="378" text-anchor="middle" fill="#a3b0d0"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="14.5">A self-hosted AI agent runtime. Engines, kernel-isolated tools and a built-in MCP server,</text>
+  <text x="600" y="399" text-anchor="middle" fill="#a3b0d0"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="14.5">with nodes connecting directly to each other.</text>
+</svg>

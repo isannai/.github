@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 952 394" width="952" height="394"
+     role="img" aria-labelledby="p2p-t p2p-d">
+  <title id="p2p-t">Peer-to-peer inference and skill execution</title>
+  <desc id="p2p-d">A laptop node finds its peer through a rendezvous server, then connects
+directly over QUIC to a desktop GPU node that runs the inference and the skill execution.</desc>
+
+  <defs>
+    <linearGradient id="wire" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0b7fb8"/><stop offset="100%" stop-color="#6247d6"/>
+    </linearGradient>
+    <marker id="arwC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#0b7fb8"/>
+    </marker>
+    <marker id="arwV" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6247d6"/>
+    </marker>
+  </defs>
+
+  <rect x=".5" y=".5" width="951" height="393" rx="20" fill="#ffffff" stroke="#d1d9e0"/>
+
+  <g transform="translate(26 32)" font-family="ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace">
+
+    <!-- 랑데부: 발견 전용 -->
+    <rect x="352" y="14" width="196" height="52" rx="12" fill="#f6f8fa" stroke="#d1d9e0" stroke-dasharray="5 4"/>
+    <text x="450" y="38" text-anchor="middle" fill="#1f2328" font-size="13" font-weight="700">rendezvous</text>
+    <text x="450" y="55" text-anchor="middle" fill="#6e7781" font-size="10.5">discovery + hole-punch only</text>
+
+    <path d="M150 120 C 150 60, 300 40, 348 40" fill="none" stroke="#d1d9e0" stroke-width="1.4" stroke-dasharray="4 5"/>
+    <path d="M750 120 C 750 60, 600 40, 552 40" fill="none" stroke="#d1d9e0" stroke-width="1.4" stroke-dasharray="4 5"/>
+    <text x="222" y="86" fill="#6e7781" font-size="10">1 register / look up</text>
+    <text x="606" y="86" fill="#6e7781" font-size="10">1 register / look up</text>
+
+    <!-- 왼쪽: 클라이언트 노드 -->
+    <rect x="28" y="120" width="244" height="176" rx="16" fill="#f6f8fa" stroke="#d1d9e0"/>
+    <text x="48" y="150" fill="#1f2328" font-size="14" font-weight="700">laptop</text>
+    <text x="48" y="169" fill="#6e7781" font-size="10.5">consumer node &#183; no GPU</text>
+    <rect x="48" y="184" width="204" height="34" rx="9" fill="#ddf2fc" stroke="#a9dff5"/>
+    <text x="62" y="206" fill="#0b5f8a" font-size="11.5">isann CLI</text>
+    <rect x="48" y="226" width="204" height="34" rx="9" fill="#ffffff" stroke="#e4e8ed"/>
+    <text x="62" y="248" fill="#57606a" font-size="11.5">isannd  (daemon)</text>
+    <text x="48" y="280" fill="#6e7781" font-size="10.5">MCP &#183; agent apps</text>
+
+    <!-- 오른쪽: 서빙 노드 -->
+    <rect x="628" y="120" width="244" height="176" rx="16" fill="#f6f8fa" stroke="#d1d9e0"/>
+    <text x="648" y="150" fill="#1f2328" font-size="14" font-weight="700">desktop</text>
+    <text x="648" y="169" fill="#6e7781" font-size="10.5">serving node &#183; GPU</text>
+    <rect x="648" y="184" width="204" height="34" rx="9" fill="#ece9fd" stroke="#c8bef7"/>
+    <text x="662" y="206" fill="#4c35b8" font-size="11.5">engine &#183; llama / SD</text>
+    <rect x="648" y="226" width="204" height="34" rx="9" fill="#dcf5ea" stroke="#a7e3c9"/>
+    <text x="662" y="248" fill="#0f6444" font-size="11.5">sandbox &#183; tool exec</text>
+    <text x="648" y="280" fill="#6e7781" font-size="10.5">kernel-isolated &#183; fs / net blocked</text>
+
+    <!-- 직결 링크 -->
+    <path d="M280 186 L620 186" stroke="url(#wire)" stroke-width="2.4" fill="none" marker-end="url(#arwV)"/>
+    <path d="M620 238 L280 238" stroke="url(#wire)" stroke-width="2.4" fill="none" marker-end="url(#arwC)"/>
+
+    <rect x="368" y="160" width="164" height="22" rx="11" fill="#ddf2fc" stroke="#a9dff5"/>
+    <text x="450" y="175" text-anchor="middle" fill="#0b5f8a" font-size="10.5">2 infer / skill request</text>
+
+    <rect x="368" y="244" width="164" height="22" rx="11" fill="#ece9fd" stroke="#c8bef7"/>
+    <text x="450" y="259" text-anchor="middle" fill="#4c35b8" font-size="10.5">3 tokens &#183; result stream</text>
+
+    <text x="450" y="212" text-anchor="middle" fill="#0b7fb8" font-size="11.5" font-weight="700">QUIC &#183; signed &#183; direct</text>
+
+    <text x="450" y="320" text-anchor="middle" fill="#6e7781" font-size="11">No relay in the data plane. Neither the prompt nor the result passes through a third party.</text>
+  </g>
+</svg>
