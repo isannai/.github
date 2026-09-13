@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/hero.svg" alt="iSANN — Inference on nodes you're allowed on, execution inside a kernel sandbox" width="100%">
+  <img src="./assets/hero.svg" alt="iSANN: inference on nodes you're allowed on, execution inside a kernel sandbox" width="100%">
 </p>
 
 <p align="center">
@@ -14,23 +14,21 @@
 
 You never hand your model to anyone else. Engines run in containers on your own GPU, and every tool an agent calls runs only inside a sandbox the kernel itself guards. The node you build this way is then called, as it is, by your other machines and by nodes you have access to.
 
-| ⚙️&nbsp; **Engine lifecycle** | 🧠&nbsp; **Eight asset kinds, one contract** | 🛡️&nbsp; **Kernel-isolated execution** |
+| ⚙️&nbsp; **Engine lifecycle** | 🧠&nbsp; **Eight asset kinds, one set of rules** | 🛡️&nbsp; **Kernel-isolated execution** |
 |---|---|---|
-| Define llama.cpp, Stable Diffusion or vLLM with the four-file manifest convention and the daemon takes it from there: docker creation, startup, warm-up and status reporting. | From engines and models to skills and presets, all eight kinds share the same contract: a content-hash id and a provenance index. Where something came from and what changed stays traceable. | Tools only ever run inside a sandbox where the OS kernel itself blocks file and network access. The boundary sits one layer below the container. |
-| `isann docker create llama` | `isann <kind> pull · list · inspect · rm` | `policy · deny-by-default` |
+| Define llama.cpp, Stable Diffusion or vLLM with the four-file manifest convention and the daemon takes it from there: docker creation, startup, warm-up and status reporting. | From engines and models to skills and presets, all eight kinds share the same rules: a content-hash id and a provenance index. Where something came from and what changed stays traceable. | Tools only ever run inside a sandbox where the OS kernel itself blocks file and network access. The boundary sits one layer below the container. |
+| `isann docker create llama` | `isann <kind> pull · list · rm` | `policy · deny-by-default` |
 
 ### Eight standard asset kinds
 
-All under one contract: content-hash id, provenance index, `<kind>:<id>` reference syntax, and the same CLI.
+All under the same rules: content-hash id, provenance index, `<kind>:<id>` reference syntax, and the same CLI.
 
 | | | | |
 |---|---|---|---|
 | **engine**<br><sub>Inference engine definition<br>`manifest + compose + .env + run.sh`</sub> | **model**<br><sub>Weights<br>loaded from HuggingFace or local disk</sub> | **tool**<br><sub>A capability an agent calls<br>`tools.json`</sub> | **skill**<br><sub>Procedural knowledge for a situation<br>`SKILL.md`</sub> |
 | **recipe**<br><sub>Declares the state a node should reach<br>`.ian`</sub> | **mesh**<br><sub>Backend apps a node runs<br>`mesh.json`</sub> | **preset**<br><sub>Inference parameter sets<br>keyed per engine</sub> | **profile**<br><sub>Engine runtime settings<br>`.env`</sub> |
 
-**Plug them in, pull them out.** All eight attach with `pull` and detach with `rm`, and you never have to rebuild the node to do it.
-
-Every one of them can be shared and traded between nodes. And two things go further still, carrying a price of their own: **one inference and one skill run**. With x402 you put a price on a single request, sell it to another node, and buy from theirs.
+**Plug them in, pull them out.** All eight attach with `pull` and detach with `rm`, and you never have to rebuild the node to do it. Every one of them can be published to the market and installed on another node with a single `isann market install`.
 
 ---
 
@@ -48,21 +46,19 @@ You type on the laptop and the desktop GPU answers. Nothing relays in between. T
 | | |
 |---|---|
 | **1 · They find each other** | Nodes register with the rendezvous, and hole-punching opens a path even from behind NAT. That is the whole of what the rendezvous does. |
-| **2 · They connect directly** | From then on the nodes speak QUIC to each other. Every request is signed with a wallet key to prove who is calling. |
+| **2 · They connect directly** | From then on the nodes speak QUIC to each other. A signed request tells the other node who is calling. |
 | **3 · It runs right there** | Inference on that node's GPU, skills and tools in that node's kernel sandbox. Only the result streams back. |
 
 ```console
-# register the desktop under an alias
-$ isann favorite add desktop 0x9f3c…a71b
-$ isann favorite use desktop
+# register the desktop under an alias and make it the default
+$ isann favorite add --alias desktop --nodeid s:0x9f3c…a71b
+$ isann favorite use --alias desktop
 
 # inference: you ask from the laptop, the desktop GPU answers
-$ isann infer --nodes desktop -m qwen3-8b -p "summarize this log"
-  ✓ desktop  llama  1.9s  ↯ streaming
+$ isann infer run --engine llama --prompt "summarize this log"
 
-# skills: same path, executed inside the remote node's sandbox
-$ isann agent run --nodes desktop --skill repo-audit
-  ✓ sandbox  kernel-isolated  fs:ro  net:deny
+# an agent run takes the same path, and its tools run in the desktop's sandbox
+$ isann agent run --engine llama --prompt "audit this repo"
 ```
 
 ### Skills your agent calls travel the very same path
@@ -84,7 +80,7 @@ Plenty of projects carry the words "distributed AI", and each of them is solving
 | **Ollama / LM Studio** | Running models locally with little setup | One machine of yours | The simplest install and model management there is | Reaches past one machine, and covers tool execution too |
 | **io.net / Vast.ai** | Renting as much GPU as you need | Rented GPUs | Large amounts of GPU available on demand | Uses hardware you own, and nothing leaves it |
 | **Exo** | Running a large model across small devices | Split across devices | Fits a model no single machine could hold | Never splits a model; what moves between nodes is the request |
-| **AI Horde** | Letting anyone run inference for free | An anonymous resource pool | No barrier to entry and no cost | A private mesh with identity and permissions attached |
+| **AI Horde** | Letting anyone run inference for free | An anonymous resource pool | No barrier to entry and no cost | Each node's owner decides who gets in |
 
 **Your own machines, not rented ones.** This is not about renting a stranger's GPU. What you connect to is hardware you own, or a node somebody opened to you.
 
@@ -92,7 +88,7 @@ Plenty of projects carry the words "distributed AI", and each of them is solving
 
 **The kernel draws the line.** Tools that only do inference have no notion of execution at all, and agent gateways usually stop at the container. In iSANN the kernel itself draws the file and network boundary.
 
-**Not an anonymous public pool.** Every request carries an identity signed with a wallet key, and the node's owner opens and closes the door by role (owner / admin / user).
+**The owner holds the door.** A node runs either **public**, open to anyone, or **protected**, where only signers the owner has registered by role (owner / admin / user) get through.
 
 ---
 
@@ -111,80 +107,114 @@ It is not an ID handed to you when you register an account. A node's address is 
 |---|---|
 | **Swap the disk and it stays** | Reinstall the OS or replace the SSD and the address is unchanged, because identity here is computed rather than stored. |
 | **There is no file to copy** | Steal a key file, move it to another machine, and it still is not that node. A different fingerprint yields a different address. |
-| **Reputation attaches to the machine** | What a node has done belongs to one piece of hardware rather than a disposable account. Throwing it away and starting over costs real money. |
+| **A record belongs to the machine** | What a node has done belongs to one piece of hardware rather than a disposable account. Throwing it away and starting over means starting from nothing. |
 | **It still finds you when the IP changes** | What you call is the node id, not an IP. Move from home to a café, or let the router pick up a new address, and the same id still reaches it. You get what a static IP would give you without paying for one. |
 
 > **The address only changes in two cases.** Replacing the mainboard changes the System UUID, and the address changes with it. Replacing the graphics card matters only for nodes derived from a GPU UUID because they have no security chip.
 > Put the other way round: as long as you do not physically change the hardware, the address stays exactly where it is.
 
-### iSANN is not a Web3 project
+---
 
-There is no chain to join and no token to hold, and nothing above this line waits on one. What we borrow from these standards is narrow and practical: **a way to prove which node is speaking, a way to hold payment until the work is done, and a way for a node's record to outlive its own word for it.** They are the wiring for the moment two strangers decide to trade.
+## Share your node and earn
+
+A node that is useful to others gets paid for it. Nothing here asks you to buy anything first: **every credit starts as work a node actually did.**
 
 | | | |
 |---|---|---|
-| **ERC-8004** · *Identity* <br>`Planned` | **ERC-8183** · *Escrow* <br>`Planned` | **x402** · *Per-request payment* <br>`Planned` |
-| Registers the hardware-derived node address as an on-chain DID. Identity stops being something a node asserts about itself and becomes a record anyone can check. | Locks the payment up front and releases it once the work is done. The side that asked never loses money without a result, and the side that worked never goes unpaid. | Uses HTTP `402 Payment Required` exactly as it is. The caller never looks up a price list first. Call as you always would and the node answers with the price. |
-| <sub>To hand work to a node you have never met, there has to be a shared ledger of what that node has done.</sub> | <sub>Between two nodes that do not know each other, a trade only happens if going first is not a risk.</sub> | <sub>Pricing by the request is what makes it possible to sell something as small as one skill run.</sub> |
+| 🔍&nbsp; **Earn by answering** | 🤝&nbsp; **Get paid for what you serve** | 🔁&nbsp; **Spend it on other nodes** |
+| Leave your node open to the public. A **prober** node comes by, asks your engine a question, and writes you a **receipt** when you pass. Collect receipts, claim them, and they turn into credit. | When someone runs inference or a skill on your node, they set a budget once and sign a running total as they use it. You collect that total later, so no call waits on a payment to clear. | Credit you earned pays for inference and skills on nodes you do not own. The more you share, the more you can call. |
+| <sub>What gets paid is **"answered when asked"**, not owning a GPU. An idle machine earns nothing.</sub> | <sub>Receipts add up instead of piling up one per call, so a dropped one costs nothing: the next covers it.</sub> | <sub>Serving and calling use the same credit. There is no second currency to convert through.</sub> |
 
-**No token is used to fence the ecosystem in.** Identity, escrow and payment all sit on standards that already exist, so anything else speaking them connects straight through.
+**Nothing to set up.** A node registered with a rendezvous and open in public mode is already ready to be checked. There is no roster to fetch and no config file to keep.
 
-A **credit** may still be issued to settle node usage. That credit is made to be spent, not held, so a substantial share of it is **burned** every time it moves to someone else. The more hands it passes through, the less of it remains, which leaves the value in actual use rather than in a price.
+```console
+# where your node stands: slot, last probe, receipts held
+$ isann faucet
+
+# turn the receipts you have banked into a signed voucher
+$ isann faucet issue
+```
+
+**Credit is earned, never sold.** Nothing is minted in advance. Credit appears only when a node proves it was useful, and it becomes withdrawable only after it has paid for real work on somebody's node. There is no stockpile behind it to sell.
+
+<sub>Receipts and vouchers work today. Spending credit on another node's inference and skills opens with per-call payment in 2027.</sub>
 
 ---
 
 ## Repositories
 
-One runtime distribution, one backend, and the asset repositories that nodes pull from. Of the eight asset kinds only **model** is absent here, because weights come straight from HuggingFace or local disk.
+One runtime distribution, the backend apps nodes run, and the asset repositories that nodes pull from. Of the eight asset kinds only **model** is absent here, because weights come straight from HuggingFace or local disk.
 
 | | |
 |---|---|
-| **[isann](https://github.com/isannai/isann)** · `runtime`<br>The runtime distribution. Daemon, CLI and version manager (ivm) binaries ship here as releases. Start from this one.<br><sub>`ivm install 0.1.2`</sub> | **[engines](https://github.com/isannai/engines)** · `engine`<br>Inference engine bundles. llama.cpp, Stable Diffusion and vLLM, each defined by the four-file convention.<br><sub>`isann engine pull github.com/isannai/engines/tree/main/llama`</sub> |
-| **[skills](https://github.com/isannai/skills)** · `asset`<br>Procedural knowledge an agent loads when the situation calls for it (`SKILL.md`), together with the tool references it needs.<br><sub>`isann skill pull github.com/isannai/skills/tree/main/<name>`</sub> | **[tools](https://github.com/isannai/tools)** · `asset`<br>Tool definitions (`tools.json`). The unit an agent actually calls, and running one always has to clear the sandbox policy first.<br><sub>`isann tool pull github.com/isannai/tools/tree/main/<name>`</sub> |
-| **[recipes](https://github.com/isannai/recipes)** · `asset`<br>Brings a single node to the state you want, from starting engines to preparing models and placing skills.<br><sub>`isann recipe pull github.com/isannai/recipes/tree/main/<name>`</sub> | **[presets](https://github.com/isannai/presets)** · `config`<br>Bundle temperature, top-p, context and the like under one name per engine, and requests pick them up on their own.<br><sub>`isann preset pull github.com/isannai/presets/tree/main/<name>`</sub> |
-| **[profiles](https://github.com/isannai/profiles)** · `config`<br>Engine runtime profiles (`.env`). For running the same engine several ways by changing only GPU memory, batch size or port.<br><sub>`isann profile pull github.com/isannai/profiles/tree/main/<name>`</sub> | **[mesh](https://github.com/isannai/mesh)** · `backend`<br>The station and control apps that let nodes find each other and surface as services live here, and the daemon starts them.<br><sub>`isann mesh start station`</sub> |
+| **[isann](https://github.com/isannai/isann)** · `runtime`<br>The runtime distribution. Daemon, CLI and version manager (ivm) binaries ship here as releases.<br><sub>`ivm install`</sub> | **[bootstrap](https://github.com/isannai/bootstrap)** · `install`<br>One-line installers for Windows and Linux. They fetch ivm, install the runtime, register the service and point you at a recipe. Start from this one.<br><sub>`get-isann.ps1 · get-isann.sh`</sub> |
+| **[engines](https://github.com/isannai/engines)** · `engine`<br>Inference engine bundles. llama.cpp, Stable Diffusion, vLLM and CLIP, each defined by the four-file convention.<br><sub>`isann engine pull https://github.com/isannai/engines/tree/main/llama --name llama`</sub> | **[mesh](https://github.com/isannai/mesh)** · `backend`<br>The apps a node runs beside its engines: station serves your engines to other nodes, probe checks nodes for the faucet, control is the console. The daemon starts them.<br><sub>`isann mesh start station`</sub> |
+| **[recipes](https://github.com/isannai/recipes)** · `asset`<br>Brings a node to the state you want in one command, from pulling a model to starting the engine and joining a rendezvous.<br><sub>`isann recipe exec install-llama-small`</sub> | **[skills](https://github.com/isannai/skills)** · `asset`<br>Procedural knowledge an agent loads when the situation calls for it (`SKILL.md`), together with the tool references it needs.<br><sub>`isann skill pull <url>`</sub> |
+| **[tools](https://github.com/isannai/tools)** · `asset`<br>Tool definitions (`tools.json`). The unit an agent actually calls, and running one always has to clear the sandbox policy first.<br><sub>`isann tool pull <url> --name <name>`</sub> | **[presets](https://github.com/isannai/presets)** · `config`<br>Bundle temperature, top-p, context and the like under one name per engine, and requests pick them up on their own.<br><sub>`isann preset pull <url>`</sub> |
+| **[profiles](https://github.com/isannai/profiles)** · `config`<br>Engine runtime profiles (`.env`). For running the same engine several ways by changing only the model, memory or batch size.<br><sub>`isann profile use --engine llama --name small`</sub> | |
 
 ---
 
-## Four steps to your first inference
+## From zero to your first inference
 
-| | | | |
-|---|---|---|---|
-| **01** Prepare the node | **02** Install the runtime | **03** Start an engine | **04** Infer |
-| `ivm init && ivm setup` | `ivm install 0.1.2 && ivm use 0.1.2` | `isann docker create llama` | `isann infer -m qwen3-8b -p "hello"` |
+**1 · Install.** One line fetches ivm, installs the runtime and registers the service.
+
+```powershell
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/isannai/bootstrap/main/get-isann.ps1 | iex
+```
+
+```sh
+# Linux
+curl -fsSL https://raw.githubusercontent.com/isannai/bootstrap/main/get-isann.sh | sh
+```
+
+**2 · Pick a recipe.** It downloads the model, starts the engine and the station, and joins a rendezvous.
+
+| Recipe | What you get | GPU |
+|---|---|---|
+| `isann recipe exec install-llama-small` | Qwen2.5-1.5B text | VRAM 4 GB+ |
+| `isann recipe exec install-llama-medium` | Qwen2.5-14B text | VRAM 12 GB+ |
+| `isann recipe exec install-sd-small` | Stable Diffusion 1.5 images | VRAM 4 GB+ |
+| `isann recipe exec install-passenger` | Use other nodes only, run nothing locally | none |
+
+**3 · Infer.**
+
+```console
+$ isann infer run --engine llama --prompt "hello"
+```
 
 ---
 
 ## Roadmap
 
-No dates here, deliberately. The order is settled; the timing is not.
+What ships next. Timing may shift as things evolve.
 
 <table>
 <tr>
 <td width="50%" valign="top">
 
-**`Now`  Working on day one**
+**`Q4 2026`  Open**
 
-<sub>Infrastructure and the developer tooling around it.</sub>
+<sub>Standing up and operating a node goes public.</sub>
 
+- **Install** with one line, and **ivm** to install, switch and run versions as a service
 - **Engine lifecycle** over docker: llama.cpp, Stable Diffusion, vLLM
 - **Direct node-to-node links**: QUIC, NAT hole-punching, cross-node commands
-- **Node identity derived from hardware**, with every request signed
+- **Node identity derived from hardware**
 - A **built-in MCP server**, plus agent, tool and skill execution
-- **Eight asset kinds** behind a single contract
-- The **ivm** version manager: install, switch, service, use
+- **Eight asset kinds** under one set of rules, published and installed through the **market**
+- **Earn**: probers check nodes and write receipts that turn into credit
 
 </td>
 <td width="50%" valign="top">
 
-**`Next`  Designed, not yet written**
+**`2027`  Share across the network**
 
-<sub>What it takes to share a node with somebody else.</sub>
+<sub>What it takes to call and pay a node you have never met.</sub>
 
-- **Multiple rendezvous**: more than one place for nodes to find each other, so one going down does not stop them meeting.
-- **ERC-8004 · ERC-8183 · x402**: widen the place nodes are found into a market (called by an ENS name rather than `0x9f3c…`), put a price on a single request, and hold the payment until the work is done. You cannot sell what nobody can find and you cannot buy what you cannot trust, so **the three open together or not at all.**
-- **Credit faucet**: a small handful of credits for newcomers, so you can try the thing before opening a wallet.
-- **Asset snapshots**: capture everything installed on a node as one thing, then bring it back or hand it to another node.
+- **Per-call payment**: you can already price a skill and list it; this is where the price actually gets collected. What moves is credit. You spend the credit you earned to call someone else's inference or skill, and credit comes in when yours is called. The node says how much first, and the caller sends the request again with the payment attached.
+- **Multiple rendezvous**: today only nodes on the same rendezvous can find each other. You will reach a node whatever rendezvous it sits on and connect to it directly, without registering there yourself.
 
 </td>
 </tr>
